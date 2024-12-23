@@ -125,6 +125,7 @@ def merge_rule_result(qa_dataset, rule_dataset, n_proc=1, filter_empty=False):
 
 
 def prediction(data, processed_list, input_builder, model, encrypt=False, data_file_gnn=None):
+    print("begin prediction")
     question = data["question"]
     answer = data["answer"]
     entities = data['q_entity']
@@ -143,11 +144,14 @@ def prediction(data, processed_list, input_builder, model, encrypt=False, data_f
                 predictiong.append(c[0])
         data["cand"] = predictiong
     
-    
+    print("predictiong",predictiong)
+    print("Q_entity",data["q_entity"])
     if id in processed_list:
+        print("return None")
         return None
     
     if model is None:
+        print("begin direct_answer")
         prediction = input_builder.direct_answer(data)
         return {
             "id": id,
@@ -156,9 +160,10 @@ def prediction(data, processed_list, input_builder, model, encrypt=False, data_f
             "ground_truth": answer,
             "input": question,
         }
-    
+    print("P begin process_inpu")
     input = input_builder.process_input(data)
     prediction = model.generate_sentence(input).strip()
+    print("prediction:",prediction)
     if prediction is None:
         return None
     result = {
@@ -264,6 +269,7 @@ def main(args, LLM):
                     fout.write(json.dumps(res) + "\n")
                     fout.flush()
     else:
+        cnt = 0
         for data in tqdm(dataset):
             res = prediction(data, processed_list, input_builder, model, encrypt=args.encrypt, data_file_gnn=data_file_gnn)
             if res is not None:
@@ -271,6 +277,10 @@ def main(args, LLM):
                     print(json.dumps(res))
                 fout.write(json.dumps(res) + "\n")
                 fout.flush()
+            cnt += 1
+            if cnt > 15:
+                break
+
     fout.close()
 
     eval_result(output_file, encrypt=args.encrypt)
@@ -333,5 +343,5 @@ if __name__ == "__main__":
     else:
         LLM = None
     args = argparser.parse_args()
-
+    print("Split",args.split)
     main(args, LLM)

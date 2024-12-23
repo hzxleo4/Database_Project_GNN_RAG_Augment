@@ -84,6 +84,7 @@ class PromptBuilder(object):
         '''
         Take question as input and return the input with prompt
         '''
+        print("begin process input")
         question = question_dict['question']
         
         if not question.endswith('?'):
@@ -91,6 +92,7 @@ class PromptBuilder(object):
         
         lists_of_paths = []
         if self.add_rule:
+            print("add rule here")
             entities = question_dict['q_entity']
             #graph = utils.build_graph(question_dict['graph'], entities, self.encrypt)
             skip_ents = []
@@ -112,17 +114,24 @@ class PromptBuilder(object):
             #input += self.GRAPH_CONTEXT.format(context = context)
         #lists_of_paths = []
         if question_dict['cand'] is not None:
+            print("cand not none")
             if not self.add_rule:
                 skip_ents = []
                 graph = utils.build_graph(question_dict['graph'], skip_ents, self.encrypt)
             lists_of_paths2 = []
             #print(question_dict['cand'])
-            reasoning_paths = utils.get_truth_paths(question_dict['q_entity'], question_dict['cand'], graph)
+            # reasoning_paths = utils.get_truth_paths(question_dict['q_entity'], question_dict['cand'], graph)
+            has_exist_edges = []
+            reasoning_paths = utils.get_truth_paths2(question_dict['q_entity'], question_dict['cand'], graph,has_exist_edges)
+            graph_structure = utils.add_graph_structure(question_dict['cand'],graph,has_exist_edges)
+            reasoning_paths += graph_structure
             for p in reasoning_paths:
+                print("1",p)
                 if utils.path_to_string(p) not in lists_of_paths:
                     lists_of_paths.append(utils.path_to_string(p))
             
             for p in reasoning_paths:
+                # print("2",p)
                 if utils.path_to_string(p) not in lists_of_paths2:
                     lists_of_paths2.append(utils.path_to_string(p))
            

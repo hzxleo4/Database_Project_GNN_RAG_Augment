@@ -6,8 +6,18 @@ import json
 with open('entities_names.json') as f:
     entities_names = json.load(f)
 names_entities = {v: k for k, v in entities_names.items()}
-
+def get_neigbors(g, node, depth=1):
+    output = {}
+    layers = dict(nx.bfs_successors(g, source=node, depth_limit=depth))
+    nodes = [node]
+    for i in range(1,depth+1):
+        output[i] = []
+        for x in nodes:
+            output[i].extend(layers.get(x,[]))
+        nodes = output[i]
+    return output
 def build_graph(graph: list, entities=None, encrypt=False) -> nx.Graph:
+    print("build graph")
     G = nx.Graph()
     for triplet in graph:
         h, r, t = triplet
@@ -18,6 +28,8 @@ def build_graph(graph: list, entities=None, encrypt=False) -> nx.Graph:
             if (t in names_entities) and (names_entities[t]  in entities):
                 t = names_entities[t]
         G.add_edge(h, t, relation=r.strip())
+    print("n_of_nodes",G.number_of_nodes())
+    print("n_of_edges",G.number_of_edges())
     return G
 
 # 定义一个函数来进行宽度优先搜索
@@ -45,7 +57,90 @@ def bfs_with_rule(graph, start_node, target_rule, max_p = 10):
                 queue.append((neighbor, current_path + [(current_node, rel,neighbor)]))
     
     return result_paths
-
+def get_neigbors(graph: nx.Graph, node, depth=1):
+    output = {}
+    layers = dict(nx.bfs_successors(graph, source=node, depth_limit=depth))
+    nodes = [node]
+    for i in range(1,depth+1):
+        output[i] = []
+        for x in nodes:
+            output[i].extend(layers.get(x,[]))
+        nodes = output[i]
+    return output
+def add_graph_structure(a_entity: list, graph: nx.Graph, exist_path) -> list:
+    new_path = []
+    # print("a_entity",a_entity)
+    for t in a_entity:
+        if t not in graph:
+            continue
+        nei_t_list = get_neigbors(graph,t)
+        # print("nei_t_list",nei_t_list)
+        for nei_t in nei_t_list[1]:
+            # print("nei_t",nei_t)
+            if nei_t in a_entity:
+                if((t,nei_t) not in exist_path):
+                    temp = []
+                    exist_path.append((t,nei_t))
+                    exist_path.append((nei_t,t))
+                    tri = (t, graph[t][nei_t]['relation'], nei_t)
+                    temp.append(tri)
+                    new_path.append(temp)
+                    # print("add",t,nei_t)
+                # continue
+            nei_nei_t_list = get_neigbors(graph,nei_t)
+            # print(nei_t,"nei_nei_t_list",nei_nei_t_list)
+            for nei_nei_t in nei_nei_t_list[1]:
+                # print("nei_nei_t",nei_nei_t)
+                if nei_nei_t != t and nei_nei_t in a_entity:
+                    if (t,nei_t) not in exist_path or (nei_t,nei_nei_t) not in exist_path:
+                        if (t,nei_t) not in exist_path:
+                            exist_path.append((t,nei_t))
+                            exist_path.append((nei_t,t))
+                        if (nei_t,nei_nei_t) not in exist_path:
+                            exist_path.append((nei_nei_t,nei_t))
+                            exist_path.append((nei_t,nei_nei_t))
+                        temp =[]
+                        tri = (t, graph[t][nei_t]['relation'], nei_t)
+                        temp.append(tri)
+                        tri = (nei_t, graph[nei_t][nei_nei_t]['relation'], nei_nei_t)
+                        temp.append(tri)
+                        new_path.append(temp)
+                        print("2",t,nei_t,nei_nei_t)
+            # print(nei_t)
+        # break
+    print(new_path)
+    return new_path
+def get_truth_paths2(q_entity: list, a_entity: list, graph: nx.Graph,has_exist_edges) -> list:
+    '''
+    Get shortest paths connecting question and answer entities.
+    '''
+    # Select paths
+    paths = []
+    for h in q_entity:
+        if h not in graph:
+            continue
+        for t in a_entity:
+            if t not in graph:
+                continue
+            try:
+                for p in nx.all_shortest_paths(graph, h, t):
+                    paths.append(p)
+            except:
+                pass
+    # Add relation to paths
+    result_paths = []
+    for p in paths:
+        tmp = []
+        for i in range(len(p)-1):
+            u = p[i]
+            v = p[i+1]
+            tri = (u, graph[u][v]['relation'], v)
+            tmp.append(tri)
+            if (u,v) not in has_exist_edges:
+                has_exist_edges.append((u,v))
+                has_exist_edges.append((v,u))
+        result_paths.append(tmp)
+    return result_paths
 def get_truth_paths(q_entity: list, a_entity: list, graph: nx.Graph) -> list:
     '''
     Get shortest paths connecting question and answer entities.
@@ -73,6 +168,7 @@ def get_truth_paths(q_entity: list, a_entity: list, graph: nx.Graph) -> list:
             tmp.append((u, graph[u][v]['relation'], v))
         result_paths.append(tmp)
     return result_paths
+
     
 def get_simple_paths(q_entity: list, a_entity: list, graph: nx.Graph, hop=2) -> list:
     '''
