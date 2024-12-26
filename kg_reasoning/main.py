@@ -6,19 +6,15 @@ from llm import generate_related_word
 from entity2Name import transfer
 from inputProcess import process_files
 
-# 阶段1
 def dbCreate(input_file, db_path):
     if not os.path.exists(db_path):
         print("Trigger dbCreate")
-        # 读取JSON文件
         with open(input_file, 'r') as f:
             data = json.load(f)
 
-        # 连接到SQLite数据库（如果数据库不存在，则会自动创建）
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
-        # 创建表（如果表不存在）
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS entities (
                 entity_id TEXT PRIMARY KEY,
@@ -26,19 +22,16 @@ def dbCreate(input_file, db_path):
             )
         ''')
 
-        # 插入数据
         for entity_id, entity_name in data.items():
             cursor.execute('''
                 INSERT OR REPLACE INTO entities (entity_id, entity_name)
                 VALUES (?, ?)
             ''', (entity_id, entity_name))
 
-        # 提交事务并关闭连接
         conn.commit()
         conn.close()
 
 
-# 阶段2
 def extract_question_entities_to_dict(json_file):
     question_entities_dict = {}
     with open(json_file, 'r', encoding='utf-8') as infile:
@@ -70,25 +63,18 @@ def extractQuestionFromSrwebqsp(json_file, target_question):
         print(f"question dictionary saved to {target_question}")
 
 
-# 阶段3：调用LLM，根据已有question抽象出related keyword
-
-# 阶段4：在sqlite数据库中进行搜索，判断是否有entity包含了keyword
 def process_related_word(input_file, db_file, output_file):
     if not os.path.exists(output_file):
-        # 连接到SQLite数据库
         conn = sqlite3.connect(db_file)
         cursor = conn.cursor()
 
-        # 读取JSON文件
         with open(input_file, 'r', encoding='utf-8') as infile:
             records = json.load(infile)
 
-        # 处理每条记录
         for record in records:
             related_words = record["related word"]
             for word_dict in related_words:
                 for keyword in word_dict.keys():
-                    # 在数据库中查找包含keyword的entity
                     cursor.execute("SELECT entity_id FROM entities WHERE entity_name LIKE ?", ('%' + keyword + '%',))
                     results = cursor.fetchall()
                     if results:
@@ -96,11 +82,9 @@ def process_related_word(input_file, db_file, output_file):
                     else:
                         word_dict[keyword] = ["None"]
 
-        # 将更新后的记录写入输出文件
         with open(output_file, 'w', encoding='utf-8') as outfile:
             json.dump(records, outfile, ensure_ascii=False, indent=4)
 
-        # 关闭数据库连接
         conn.close()
 
 
