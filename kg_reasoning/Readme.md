@@ -29,7 +29,7 @@ python main.py
 dbCreate("./data/entity2name/entities_names.json","./data/entity2name/entities.db" )
 ```
 
-1. Extract the question context  cwq and webqsp knowledge graph
+2. Extract the question context  cwq and webqsp knowledge graph
 
 ```SQL
 # Extract the question from CWQ knowledge graph
@@ -39,7 +39,7 @@ extractQuestionFromSrwebqsp("./data/originalKG/cwq/test.json", "./data/extracted
 extractQuestionFromSrwebqsp("./data/originalKG/webqsp/test.json", "./data/extractedQuestion/webqsp/question.txt")
 ```
 
-1. Call LLM(i.e. deepseek) to abstract the related keyword based on the question
+3. Call LLM(i.e. deepseek) to abstract the related keyword based on the question
 
 ```SQL
  generate_related_word(
@@ -55,7 +55,7 @@ extractQuestionFromSrwebqsp("./data/originalKG/webqsp/test.json", "./data/extrac
         )
 ```
 
-1. Search in the sqplite3 database to find if there are any entities that contain related words
+4. Search in the sqplite3 database to find if there are any entities that contain related words
 
 ```SQL
 process_related_word(
@@ -72,7 +72,7 @@ process_related_word(
  
 ```
 
-1. Modify the LLM input file(e.g. /result/gnn/RoG-webqsp/rearev-lmsr/test.info) and add the retrieved entity id to the LLM input
+5. Modify the LLM input file(e.g. /result/gnn/RoG-webqsp/rearev-lmsr/test.info) and add the retrieved entity id to the LLM input
 
 ```SQL
 process_files(
