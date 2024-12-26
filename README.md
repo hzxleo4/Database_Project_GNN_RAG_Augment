@@ -1,4 +1,8 @@
-This is the code for **GNN-RAG: Graph Neural Retrieval for Large Language Modeling Reasoning**.
+This project is a course project from CSCI5120.
+
+This is the code for **GNN-RAG: Graph Neural Retrieval for Large Language Modeling Reasoning**. We modified it with LLM-based Candidate Answer Expansion and Subgraph-based Retrieval Path Expansion.
+
+ 
 
 
 ![alt GNN-RAG: The GNN reasons over a dense subgraph to retrieve candidate answers, along
