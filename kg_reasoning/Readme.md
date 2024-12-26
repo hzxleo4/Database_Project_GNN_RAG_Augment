@@ -29,7 +29,7 @@ python main.py
 dbCreate("./data/entity2name/entities_names.json","./data/entity2name/entities.db" )
 ```
 
-2. Extract the question context from cwq and webqsp knowledge graph
+2. Extract the question context from cwq and webqsp knowledge graph dataset
 
 ```SQL
 # Extract the question from CWQ knowledge graph
