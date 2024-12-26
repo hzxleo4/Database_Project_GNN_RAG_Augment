@@ -2,6 +2,7 @@ from openai import OpenAI
 import os
 import json
 
+# 设置OpenAI API密钥
 def read_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.readlines()
@@ -25,7 +26,9 @@ def generate_related_work(question):
 def filter_and_clean_lines(input_file, output_file):
     with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
         for line in infile:
+            # 删除每行中的*符号
             cleaned_line = line.replace('*', '')
+            # 检查行是否以1. 2. 3. 4. 5.开头
             if cleaned_line.strip().startswith(('1.', '2.', '3.', '4.', '5.')):
                 outfile.write(cleaned_line)
     os.remove(input_file)

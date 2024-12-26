@@ -29,7 +29,7 @@ python main.py
 dbCreate("./data/entity2name/entities_names.json","./data/entity2name/entities.db" )
 ```
 
-2. Extract the question context from cwq and webqsp knowledge graph dataset
+2. Extract the question context  from cwq and webqsp knowledge graph dataset
 
 ```SQL
 # Extract the question from CWQ knowledge graph
@@ -78,25 +78,35 @@ process_related_word(
 process_files(
         "./result/gnn/RoG-webqsp/webqsp_final_relatedWord.json",
         "./result/gnn/RoG-webqsp/rearev-lmsr/test.info",
-        "./result/gnn/RoG-webqsp/rearev-lmsr/update_test.info"
+        "./result/gnn/RoG-webqsp/rearev-lmsr/webqsp_lsmr.info"
     )
 
 process_files(
         "./result/gnn/RoG-webqsp/webqsp_final_relatedWord.json",
         "./result/gnn/RoG-webqsp/rearev-sbert/test.info",
-        "./result/gnn/RoG-webqsp/rearev-sbert/update_test.info"
+        "./result/gnn/RoG-webqsp/rearev-sbert/webqsp_sbert.info"
     )
 
 process_files(
         "./result/gnn/RoG-cwq/cwq_final_relatedWord.json",
         "./result/gnn/RoG-cwq/rearev-lmsr/test.info",
-        "./result/gnn/RoG-cwq/rearev-lmsr/update_test.info"
+        "./result/gnn/RoG-cwq/rearev-lmsr/cwq_lmsr.info"
     )
 
 process_files(
         "./result/gnn/RoG-cwq/cwq_final_relatedWord.json",
         "./result/gnn/RoG-cwq/rearev-sbert/test.info",
-        "./result/gnn/RoG-cwq/rearev-sbert/update_test.info"
+        "./result/gnn/RoG-cwq/rearev-sbert/cwq_sbert.info"
     )
  
 ```
+
+### Output files
+
+```
+./result/gnn/RoG-webqsp/rearev-lmsr/webqsp_lsmr.info
+./result/gnn/RoG-webqsp/rearev-sbert/webqsp_sbert.info
+./result/gnn/RoG-cwq/rearev-lmsr/cwq_lmsr.inf
+./result/gnn/RoG-cwq/rearev-sbert/cwq_sbert.info
+```
+
