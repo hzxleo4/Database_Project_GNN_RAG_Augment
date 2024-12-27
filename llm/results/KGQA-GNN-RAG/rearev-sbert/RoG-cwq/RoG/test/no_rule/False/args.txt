@@ -5,7 +5,7 @@
   "predict_path": "results/KGQA-GNN-RAG/rearev-sbert",
   "model_name": "RoG",
   "prompt_path": "prompts/llama2_predict.txt",
-  "add_rule": true,
+  "add_rule": false,
   "use_true": false,
   "cot": false,
   "explain": false,

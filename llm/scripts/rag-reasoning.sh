@@ -1,6 +1,7 @@
 
 SPLIT="test"
-DATASET_LIST="RoG-webqsp"
+# DATASET_LIST="RoG-webqsp"
+DATASET_LIST="RoG-cwq"
 MODEL_NAME=RoG
 PROMPT_PATH=prompts/llama2_predict.txt
 BEAM_LIST="3" # "1 2 3 4 5"
@@ -10,7 +11,7 @@ for DATA_NAME in $DATASET_LIST; do
     for N_BEAM in $BEAM_LIST; do
         RULE_PATH=results/gen_rule_path/${DATA_NAME}/${MODEL_NAME}/test/predictions_${N_BEAM}_False.jsonl
         RULE_PATH_G1=results/gnn/${DATA_NAME}/rearev-sbert/test.info
-        RULE_PATH_G2=None #results/gnn/${DATA_NAME}/rearev-lmsr/test.info
+        RULE_PATH_G2=None #results/gnn/${DATA_NAME}/rearev-lmsr/test.infoe"
 
         # no rog
         python src/qa_prediction/predict_answer.py \

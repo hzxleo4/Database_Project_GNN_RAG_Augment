@@ -1,6 +1,7 @@
 import sys
 import os
 
+import torch
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/..")
 import utils
 import argparse
@@ -124,6 +125,29 @@ def merge_rule_result(qa_dataset, rule_dataset, n_proc=1, filter_empty=False):
     return qa_dataset
 
 
+def get_prediction_from_deepseek(input_text):
+    # 设置 DeepSeek API 的 URL
+    api_url = "https://api.deepseek.com/v1/predict"
+    
+    # 创建请求体，假设 DeepSeek API 接受 JSON 格式
+    payload = {
+        "input": input_text,
+        "parameters": {
+            "max_length": 512,
+            "temperature": 0.7
+        }
+    }
+    
+    # 发送 POST 请求到 DeepSeek API
+    response = requests.post(api_url, json=payload)
+    
+    if response.status_code == 200:
+        result = response.json()
+        return result['prediction']  # 假设返回结果的结构中包含 'prediction'
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
 def prediction(data, processed_list, input_builder, model, encrypt=False, data_file_gnn=None):
     print("begin prediction")
     question = data["question"]
@@ -162,8 +186,11 @@ def prediction(data, processed_list, input_builder, model, encrypt=False, data_f
         }
     print("P begin process_inpu")
     input = input_builder.process_input(data)
-    prediction = model.generate_sentence(input).strip()
-    print("prediction:",prediction)
+    prediction = model.generate_sentence(input).strip() 
+    # 使用 DeepSeek API 进行推理
+    # prediction = self.get_prediction_from_deepseek(input)
+    print("get LLM prediction")
+    # print("prediction:",prediction)
     if prediction is None:
         return None
     result = {

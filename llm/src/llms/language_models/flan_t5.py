@@ -6,7 +6,9 @@ class FlanT5(BaseLanguageModel):
     DTYPE = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
     @staticmethod
     def add_args(parser):
+        # google/flan-t5-large
         parser.add_argument('--model_path', type=str, help="HUGGING FACE MODEL or model path", default='google/flan-t5-xl')
+        # parser.add_argument('--model_path', type=str, help="HUGGING FACE MODEL or model path", default='flan-t5-large')
         parser.add_argument('--max_new_tokens', type=int, help="max length", default=512)
         parser.add_argument('--dtype', choices=['fp32', 'fp16', 'bf16'], default='fp16')
 
