@@ -7,9 +7,3 @@ Please also download 'test.json' file from https://drive.google.com/drive/folder
 
 ## Evaluation
 We provide the results of GNN retrieval in `results/gnn`. To evaluate GNN-RAG performance, run `scripts/rag-reasoning.sh`. 
-
-
-
-## Resutls
-
-Xiangao' part
